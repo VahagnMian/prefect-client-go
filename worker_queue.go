@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func CreateWorkQueue(queue WorkQueue) error {
+func (wq WorkQueue) CreateWorkQueue(queue WorkQueue) error {
 	data, err := json.Marshal(queue)
 	if err != nil {
 		return fmt.Errorf("marshaling error: %v", err)
