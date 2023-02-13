@@ -36,3 +36,30 @@ func (wq WorkQueue) CreateWorkQueue(queue WorkQueue) (*WorkQueue, error) {
 
 	return &work_queue, nil
 }
+
+func GetWorkQueue(wqID string) (*WorkQueue, error) {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/work_queues/%s", "http://localhost:4200", wqID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	order := WorkQueue{}
+	err = json.Unmarshal(body, &order)
+	if err != nil {
+		return nil, err
+	}
+
+	return &order, nil
+}
