@@ -9,6 +9,7 @@ import (
 )
 
 func (wq WorkQueue) CreateWorkQueue(queue WorkQueue) (*WorkQueue, error) {
+	queue.ID = "" // set ID to empty string to prevent it from being sent in the request
 	data, err := json.Marshal(queue)
 	if err != nil {
 		return nil, fmt.Errorf("marshaling error: %v", err)
