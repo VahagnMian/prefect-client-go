@@ -37,7 +37,7 @@ func (wq WorkQueue) CreateWorkQueue(queue WorkQueue) (*WorkQueue, error) {
 	return &work_queue, nil
 }
 
-func GetWorkQueue(wqID string) (*WorkQueue, error) {
+func (wq WorkQueue) GetWorkQueue(wqID string) (*WorkQueue, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/work_queues/%s", "http://localhost:4200", wqID), nil)
 	if err != nil {
