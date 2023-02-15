@@ -56,11 +56,46 @@ func (wq WorkQueue) GetWorkQueue(wqID string) (*WorkQueue, error) {
 		return nil, err
 	}
 
-	order := WorkQueue{}
-	err = json.Unmarshal(body, &order)
+	w_queue := WorkQueue{}
+	err = json.Unmarshal(body, &w_queue)
 	if err != nil {
 		return nil, err
 	}
 
-	return &order, nil
+	return &w_queue, nil
+}
+
+func (wq WorkQueue) UpdateWorkQueue(wqID string, queue WorkQueue) (*WorkQueue, error) {
+	client := &http.Client{}
+	data, err := json.Marshal(queue)
+	if err != nil {
+		return nil, fmt.Errorf("marshaling error: %v", err)
+	}
+
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/api/work_queues/%s", "http://localhost:4200", wqID), bytes.NewBuffer(data))
+	if err != nil {
+		return nil, fmt.Errorf("request error: %v", err)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		body, _ := ioutil.ReadAll(resp.Body)
+		fmt.Printf("response body: %s\n", string(body))
+		return nil, fmt.Errorf("bad status: %s\n%s", resp.Status, body)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	work_queue := WorkQueue{}
+	err = json.Unmarshal(body, &work_queue)
+	if err != nil {
+		return nil, err
+	}
+
+	return &work_queue, nil
 }
