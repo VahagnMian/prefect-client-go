@@ -3,6 +3,7 @@ package prefect_client
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -98,4 +99,23 @@ func (wq WorkQueue) UpdateWorkQueue(wqID string, queue WorkQueue) (*WorkQueue, e
 	}
 
 	return &work_queue, nil
+}
+
+func (wq *WorkQueue) DeleteWorkQueue(wqID string) error {
+	client := &http.Client{}
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/work_queues/%s", "http://localhost:4200", wqID), nil)
+
+	resp, err := client.Do(req)
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		return err
+	}
+
+	if string(body) != "Deleted order" {
+		return errors.New(string(body))
+	}
+
+	return nil
 }
