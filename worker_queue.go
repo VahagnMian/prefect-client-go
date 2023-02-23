@@ -3,20 +3,21 @@ package prefect_client
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 )
 
-func (wq WorkQueue) CreateWorkQueue(queue WorkQueue) (*WorkQueue, error) {
+func (wq WorkQueue) CreateWorkQueue(queue WorkQueue, url string) (*WorkQueue, error) {
 	queue.ID = "" // set ID to empty string to prevent it from being sent in the request
 	data, err := json.Marshal(queue)
 	if err != nil {
 		return nil, fmt.Errorf("marshaling error: %v", err)
 	}
 
-	resp, err := http.Post("http://localhost:4200/api/work_queues/", "application/json", bytes.NewBuffer(data))
+	endpoint := url + "/api/work_queues/"
+
+	resp, err := http.Post(endpoint, "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		return nil, fmt.Errorf("request error: %v", err)
 	}
@@ -108,14 +109,15 @@ func (wq *WorkQueue) DeleteWorkQueue(wqID string) error {
 	resp, err := client.Do(req)
 
 	body, err := ioutil.ReadAll(resp.Body)
+	fmt.Println(body)
 
 	if err != nil {
 		return err
 	}
 
-	if string(body) != "Deleted order" {
-		return errors.New(string(body))
-	}
+	//if string(body) != "Deleted order" {
+	//	return errors.New(string(body))
+	//}
 
 	return nil
 }
