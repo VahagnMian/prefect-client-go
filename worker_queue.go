@@ -40,9 +40,10 @@ func (wq WorkQueue) CreateWorkQueue(queue WorkQueue, url string) (*WorkQueue, er
 	return &work_queue, nil
 }
 
-func (wq WorkQueue) GetWorkQueue(wqID string) (*WorkQueue, error) {
+func (wq WorkQueue) GetWorkQueue(wqID string, url string) (*WorkQueue, error) {
+	//endpoint := url + "/api/work_queues/"
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/work_queues/%s", "http://localhost:4200", wqID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/work_queues/%s", url, wqID), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -67,14 +68,14 @@ func (wq WorkQueue) GetWorkQueue(wqID string) (*WorkQueue, error) {
 	return &w_queue, nil
 }
 
-func (wq WorkQueue) UpdateWorkQueue(wqID string, queue WorkQueue) (*WorkQueue, error) {
+func (wq WorkQueue) UpdateWorkQueue(wqID string, queue WorkQueue, url string) (*WorkQueue, error) {
 	client := &http.Client{}
 	data, err := json.Marshal(queue)
 	if err != nil {
 		return nil, fmt.Errorf("marshaling error: %v", err)
 	}
 
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/api/work_queues/%s", "http://localhost:4200", wqID), bytes.NewBuffer(data))
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/api/work_queues/%s", url, wqID), bytes.NewBuffer(data))
 	if err != nil {
 		return nil, fmt.Errorf("request error: %v", err)
 	}
@@ -102,9 +103,9 @@ func (wq WorkQueue) UpdateWorkQueue(wqID string, queue WorkQueue) (*WorkQueue, e
 	return &work_queue, nil
 }
 
-func (wq *WorkQueue) DeleteWorkQueue(wqID string) error {
+func (wq *WorkQueue) DeleteWorkQueue(wqID string, url string) error {
 	client := &http.Client{}
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/work_queues/%s", "http://localhost:4200", wqID), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/work_queues/%s", url, wqID), nil)
 
 	resp, err := client.Do(req)
 
